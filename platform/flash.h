@@ -41,8 +41,9 @@ void flash_eraseSector(long page);
 
 // flash storage array
 __at(FLASH_START_ADDRESS)
-const uint8_t STORAGE[FLASH_SIZE_SECTORS][FLASH_ERASABLE_BYTES] =
-        { [0 ... ((FLASH_SIZE_SECTORS) - 1)][0 ... ((FLASH_ERASABLE_BYTES) - 1)] = 0xFF };
+const unsigned char STORAGE[FLASH_SIZE_SECTORS][FLASH_ERASABLE_BYTES] = {
+    [0 ... ((FLASH_SIZE_SECTORS) - 1)][0 ... ((FLASH_ERASABLE_BYTES) - 1)] = 0xFF
+};
 
 //#define flash_readByte(p, offset)   *(FLASH_START_ADDRESS + ((long) (p) * FLASH_WRITABLE_BYTES) + (offset))
 

@@ -209,7 +209,7 @@ void flash_getHeader(long p, long *len, char **name) {
         if(name) {
             *name = (char *) system_buffer;
             memset(*name, 0, FLASH_FILE_HEADER);
-            uint8_t t;
+            unsigned char t;
             for(t = 0; t < FLASH_FILE_HEADER - 4; t++) *(*name + t) = flash_readByte(p, t + 4);
         }
     #endif

@@ -98,7 +98,7 @@ ${OBJECTDIR}/_ext/1318599650/eadog204.p1: ../platform/eadog204.c  nbproject/Make
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/eadog204.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/eadog204.p1 ../platform/eadog204.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/eadog204.p1 ../platform/eadog204.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/eadog204.d ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -106,7 +106,7 @@ ${OBJECTDIR}/_ext/1318599650/flash.p1: ../platform/flash.c  nbproject/Makefile-$
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/flash.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/flash.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/flash.p1 ../platform/flash.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/flash.p1 ../platform/flash.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/flash.d ${OBJECTDIR}/_ext/1318599650/flash.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/flash.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -114,7 +114,7 @@ ${OBJECTDIR}/_ext/1318599650/hardware.p1: ../platform/hardware.c  nbproject/Make
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/hardware.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/hardware.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/hardware.p1 ../platform/hardware.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/hardware.p1 ../platform/hardware.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/hardware.d ${OBJECTDIR}/_ext/1318599650/hardware.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/hardware.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -122,7 +122,7 @@ ${OBJECTDIR}/_ext/1318599650/keybd.p1: ../platform/keybd.c  nbproject/Makefile-$
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/keybd.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/keybd.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/keybd.p1 ../platform/keybd.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/keybd.p1 ../platform/keybd.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/keybd.d ${OBJECTDIR}/_ext/1318599650/keybd.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/keybd.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -130,7 +130,7 @@ ${OBJECTDIR}/_ext/671061791/xmodem.p1: ../xmodem/xmodem.c  nbproject/Makefile-${
 	@${MKDIR} "${OBJECTDIR}/_ext/671061791" 
 	@${RM} ${OBJECTDIR}/_ext/671061791/xmodem.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/671061791/xmodem.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/671061791/xmodem.p1 ../xmodem/xmodem.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/671061791/xmodem.p1 ../xmodem/xmodem.c 
 	@-${MV} ${OBJECTDIR}/_ext/671061791/xmodem.d ${OBJECTDIR}/_ext/671061791/xmodem.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/671061791/xmodem.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -138,7 +138,7 @@ ${OBJECTDIR}/_ext/1472/main.p1: ../main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/main.p1 ../main.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/main.p1 ../main.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/main.d ${OBJECTDIR}/_ext/1472/main.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -146,7 +146,7 @@ ${OBJECTDIR}/_ext/1472/editor.p1: ../editor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/editor.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/editor.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/editor.p1 ../editor.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/editor.p1 ../editor.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/editor.d ${OBJECTDIR}/_ext/1472/editor.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/editor.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -154,7 +154,7 @@ ${OBJECTDIR}/_ext/1472/common.p1: ../common.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/common.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/common.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/common.p1 ../common.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/common.p1 ../common.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/common.d ${OBJECTDIR}/_ext/1472/common.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/common.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -162,7 +162,7 @@ ${OBJECTDIR}/_ext/1472/xmem.p1: ../xmem.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/xmem.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/xmem.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/xmem.p1 ../xmem.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/xmem.p1 ../xmem.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/xmem.d ${OBJECTDIR}/_ext/1472/xmem.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/xmem.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -170,7 +170,7 @@ ${OBJECTDIR}/_ext/1472/basic.p1: ../basic.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/basic.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/basic.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basic.p1 ../basic.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basic.p1 ../basic.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/basic.d ${OBJECTDIR}/_ext/1472/basic.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/basic.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -178,7 +178,7 @@ ${OBJECTDIR}/_ext/1472/basiclib.p1: ../basiclib.c  nbproject/Makefile-${CND_CONF
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/basiclib.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/basiclib.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=pickit4    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basiclib.p1 ../basiclib.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1  -mdebugger=none    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basiclib.p1 ../basiclib.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/basiclib.d ${OBJECTDIR}/_ext/1472/basiclib.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/basiclib.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -187,7 +187,7 @@ ${OBJECTDIR}/_ext/1318599650/eadog204.p1: ../platform/eadog204.c  nbproject/Make
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/eadog204.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/eadog204.p1 ../platform/eadog204.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/eadog204.p1 ../platform/eadog204.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/eadog204.d ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/eadog204.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -195,7 +195,7 @@ ${OBJECTDIR}/_ext/1318599650/flash.p1: ../platform/flash.c  nbproject/Makefile-$
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/flash.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/flash.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/flash.p1 ../platform/flash.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/flash.p1 ../platform/flash.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/flash.d ${OBJECTDIR}/_ext/1318599650/flash.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/flash.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -203,7 +203,7 @@ ${OBJECTDIR}/_ext/1318599650/hardware.p1: ../platform/hardware.c  nbproject/Make
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/hardware.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/hardware.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/hardware.p1 ../platform/hardware.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/hardware.p1 ../platform/hardware.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/hardware.d ${OBJECTDIR}/_ext/1318599650/hardware.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/hardware.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -211,7 +211,7 @@ ${OBJECTDIR}/_ext/1318599650/keybd.p1: ../platform/keybd.c  nbproject/Makefile-$
 	@${MKDIR} "${OBJECTDIR}/_ext/1318599650" 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/keybd.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1318599650/keybd.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/keybd.p1 ../platform/keybd.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1318599650/keybd.p1 ../platform/keybd.c 
 	@-${MV} ${OBJECTDIR}/_ext/1318599650/keybd.d ${OBJECTDIR}/_ext/1318599650/keybd.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1318599650/keybd.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -219,7 +219,7 @@ ${OBJECTDIR}/_ext/671061791/xmodem.p1: ../xmodem/xmodem.c  nbproject/Makefile-${
 	@${MKDIR} "${OBJECTDIR}/_ext/671061791" 
 	@${RM} ${OBJECTDIR}/_ext/671061791/xmodem.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/671061791/xmodem.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/671061791/xmodem.p1 ../xmodem/xmodem.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/671061791/xmodem.p1 ../xmodem/xmodem.c 
 	@-${MV} ${OBJECTDIR}/_ext/671061791/xmodem.d ${OBJECTDIR}/_ext/671061791/xmodem.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/671061791/xmodem.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -227,7 +227,7 @@ ${OBJECTDIR}/_ext/1472/main.p1: ../main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/main.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/main.p1 ../main.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/main.p1 ../main.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/main.d ${OBJECTDIR}/_ext/1472/main.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/main.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -235,7 +235,7 @@ ${OBJECTDIR}/_ext/1472/editor.p1: ../editor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/editor.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/editor.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/editor.p1 ../editor.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/editor.p1 ../editor.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/editor.d ${OBJECTDIR}/_ext/1472/editor.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/editor.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -243,7 +243,7 @@ ${OBJECTDIR}/_ext/1472/common.p1: ../common.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/common.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/common.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/common.p1 ../common.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/common.p1 ../common.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/common.d ${OBJECTDIR}/_ext/1472/common.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/common.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -251,7 +251,7 @@ ${OBJECTDIR}/_ext/1472/xmem.p1: ../xmem.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/xmem.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/xmem.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/xmem.p1 ../xmem.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/xmem.p1 ../xmem.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/xmem.d ${OBJECTDIR}/_ext/1472/xmem.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/xmem.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -259,7 +259,7 @@ ${OBJECTDIR}/_ext/1472/basic.p1: ../basic.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/basic.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/basic.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basic.p1 ../basic.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basic.p1 ../basic.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/basic.d ${OBJECTDIR}/_ext/1472/basic.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/basic.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -267,7 +267,7 @@ ${OBJECTDIR}/_ext/1472/basiclib.p1: ../basiclib.c  nbproject/Makefile-${CND_CONF
 	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
 	@${RM} ${OBJECTDIR}/_ext/1472/basiclib.p1.d 
 	@${RM} ${OBJECTDIR}/_ext/1472/basiclib.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basiclib.p1 ../basiclib.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -DXPRJ_default=$(CND_CONF)  -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto -mstackcall     -o ${OBJECTDIR}/_ext/1472/basiclib.p1 ../basiclib.c 
 	@-${MV} ${OBJECTDIR}/_ext/1472/basiclib.d ${OBJECTDIR}/_ext/1472/basiclib.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/_ext/1472/basiclib.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
@@ -290,13 +290,13 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} ${DISTDIR} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.map  -D__DEBUG=1  -mdebugger=pickit4  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits -mstackcall -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto        $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
+	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.map  -D__DEBUG=1  -mdebugger=none  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits -mstackcall -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto        $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
 	@${RM} ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.hex 
 	
 else
 ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} ${DISTDIR} 
-	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.map  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-2 -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits -mstackcall -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
+	${MP_CC} $(MP_EXTRA_LD_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -Wl,-Map=${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.map  -DXPRJ_default=$(CND_CONF)  -Wl,--defsym=__MPLAB_BUILD=1    -fno-short-double -fno-short-float -memi=wordwrite -Os -fasmfile -maddrqual=require -mchp-stack-usage -xassembler-with-cpp -mwarn=-3 -msummary=+psect,-class,+mem,-hex,+file --fill=0xFF  -ginhx32 -Wl,--data-init -mno-keep-startup -mdownload -mno-default-config-bits -mstackcall -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     $(COMPARISON_BUILD) -Wl,--memorysummary,${DISTDIR}/memoryfile.xml -o ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX}  ${OBJECTFILES_QUOTED_IF_SPACED}     
 	
 	@echo Normalizing hex file
 	@"C:/Program Files/Microchip/MPLABX/v6.00/mplab_platform/platform/../mplab_ide/modules/../../bin/hexmate" --edf="C:/Program Files/Microchip/MPLABX/v6.00/mplab_platform/platform/../mplab_ide/modules/../../dat/en_msgs.txt" ${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.hex -o${DISTDIR}/ELLO_LC1.X.${IMAGE_TYPE}.hex

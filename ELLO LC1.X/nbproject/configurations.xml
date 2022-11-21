@@ -59,7 +59,7 @@
         <targetDevice>PIC18F47Q83</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>2.40</languageToolchainVersion>
         <platform>3</platform>
@@ -125,7 +125,7 @@
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="verbose" value="false"/>
-        <property key="warning-level" value="-2"/>
+        <property key="warning-level" value="-3"/>
         <property key="what-to-do" value="require"/>
       </HI-TECH-COMP>
       <HI-TECH-LINK>
