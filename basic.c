@@ -39,6 +39,7 @@ const error_t errors[] = {
     { E_NO_DATA,    "No more data" },
     { E_FILE,       "File #" },
     { E_CHANNEL,    "Invalid channel" },
+    { E_WRITE,      "File write/append" },
     { 0, 0 }    // must be always last in this list
 };
 
@@ -69,14 +70,17 @@ const keyword_t keywords[] = {
     { 4, 0, T_POWER,            "^",        1, '^',    op_power },
     { 0, 0, T_OP_PAREN,         "(",        1, '(',    __ },
     { 0, 0, T_CL_PAREN,         ")",        1, ')',    __ },
-    { 0, 0, T_OP_BRACKET,       "[",        1, '[',    __ },
-    { 0, 0, T_CL_BRACKET,       "]",        1, ']',    __ },
-    { 0, 0, T_COMMA,            ",",        1, ',',    __ },
-    { 0, 0, T_COLON,            ":",        1, ':',    __ },
-    { 0, 0, T_SEMICOLON,        ";",        1, ';',    __ },
-    { 0, 0, T_AT,               "@",        1, '@',    __ },
-    { 0, 0, T_HASH,             "#",        1, '#',    __ },
-    {-1, 0, T_QUESTION,         "?",        1, '?',    __ },                // alias to PRINT
+    { 0, 0, T_OP_BRACKET,       "[",        1, '[',    __ },                // array index
+    { 0, 0, T_CL_BRACKET,       "]",        1, ']',    __ },                // array index
+    { 0, 0, T_COMMA,            ",",        1, ',',    __ },                // parameter separator
+    { 0, 0, T_COLON,            ":",        1, ':',    __ },                // statement separator
+    { 0, 0, T_SEMICOLON,        ";",        1, ';',    __ },                // print value separator
+    { 0, 0, T_AT,               "@",        1, '@',    __ },                // pointer to variable
+    { 0, 0, T_HASH,             "#",        1, '#',    __ },                // file handler
+
+    // non-alphabetic aliases to commands
+    { 0, 0, T_ENDIF,            "!",        1, '!',    cm_endif },          // ENDIF
+    {-1, 0, T_PRINT,            "?",        1, '?',    __ },                // PRINT
 
     // A (0x160)
     { 2, 0, T_AND,              "AND",      3, 0x0160, op_and },
@@ -107,6 +111,7 @@ const keyword_t keywords[] = {
     { 0, 9, T_DEFCH,            "DEFCH",    5, 0x0192, cm_defch },
     { 0, 1, T_DIN,              "DIN",      3, 0x0193, fn_din },
     { 0, 2, T_DOUT,             "DOUT",     4, 0x0194, cm_dout },
+    { 0, 1, T_DELETE,           "DELETE",   6, 0x0195, cm_delete },
 
     // E (0x1A0)
     { 0, 0, T_ELSE,             "ELSE",     4, 0x01A0, cm_else },   // code is followed by a two-byte offset to matching ENDIF
@@ -118,8 +123,9 @@ const keyword_t keywords[] = {
     {-1, 0, T_ENDSUB,           "ENDSUB",   6, 0x01A6, __ },
     {-1, 0, T_ENDSUB,           "END SUB",  7, 0x01A7, __ },
     {-1, 0, T_ENDSUB,           "ENDFUNC",  7, 0x01A8, __ },        // alias to ENDSUB
-    {-1, 0, T_ENDSUB,           "END FUNC", 8, 0x01A9, __ },
-    { 0, 0, T_END,              "END",      3, 0x01AA, cm_end },
+    {-1, 0, T_ENDSUB,           "END FUNC", 8, 0x01A9, __ },        // alias to ENDSUB
+    { 0, 1, T_EXIST,            "EXIST",    5, 0x01AA, fn_exist },
+    { 0, 0, T_END,              "END",      3, 0x01AB, cm_end },
 
     // F (0x1B0)
     {-1, 0, T_FOR,              "FOR",      3, 0x01B0, __ },
@@ -190,12 +196,13 @@ const keyword_t keywords[] = {
     { 0, 2, T_RIGHT,            "RIGHT$",   6, 0x0275, fn_right },
     {-1, 0, T_READ,             "READ",     4, 0x0276, __ },
     { 0, 0, T_REWIND,           "REWIND",   6, 0x0277, cm_rewind },
-    { 0, 0, T_RESET,            "RESET",    5, 0x0278, cm_reset },
+    { 0, 2, T_RENAME,           "RENAME",   6, 0x0278, cm_rename },
+    { 0, 0, T_RESET,            "RESET",    5, 0x0279, cm_reset },
 
     // S (0x280)
     { 0, 1, T_SQR,              "SQR",      3, 0x0280, fn_sqr },
     { 0, 1, T_SIN,              "SIN",      3, 0x0281, fn_sin },
-    { 0, 0, T_STEP,             "STEP",     4, 0x0281, __ },
+    { 0, 0, T_STEP,             "STEP",     4, 0x0282, __ },
     { 0, 0, T_SUB,              "SUB",      3, 0x0283, cm_sub },
     { 0, 0, T_TYPE_STRING,      "STRING",   6, 0x0284, __ },
     { 0, 2, T_STR,              "STR$",     4, 0x0285, fn_str },
@@ -226,7 +233,7 @@ const keyword_t keywords[] = {
     // W (0x2C0)
     {-1, 0, T_WHILE,            "WHILE",    5, 0x02C0, __ },
     { 0, 0, T_WEND,             "WEND",     4, 0x02C1, cm_wend },
-    { 0, 0, T_WAIT,             "WAIT",     4, 0x02C2, cm_wait },
+    { 0, 1, T_WAIT,             "WAIT",     4, 0x02C2, cm_wait },
 
     // X (0x2D0)
     { 2, 0, T_XOR,              "XOR",      3, 0x02D0, op_xor },
@@ -275,6 +282,7 @@ void releaseVars(char *parent) {
 
 // print an error message and exit
 void error(error_code_t err) {
+    if(bas.error_code != E_OK) return;
     bas.error_code = err;
     for( ; bas.acX >= 0; bas.acX--) {
         if(bas.acc[bas.acX].type == TYPE_STR) x_free((byte **) &bas.acc[bas.acX].s);
@@ -304,7 +312,7 @@ void error(error_code_t err) {
         printf("%s", e->message);
         while(toupper(getchar()) == 'C');   // wait for a key pressed to return to the editor (ignore Ctrl-C here)
     }
-    longjmp(bas.err_env, (int) e->e_code);
+    longjmp(bas.err_env, (int) bas.error_code);
 }
 
 
@@ -597,7 +605,17 @@ void callSub(sub_t *sp) {
             par_src = bas.src; bas.src = sub_src;   // ======= switch to the sub side
         }
     }
-    else revert_getToken();     // revert the last getToken()
+    else {  // no parameters are expected
+        revert_getToken();     // revert the last getToken()
+        sub_src = bas.src; bas.src = par_src;       // ======= switch to the parameters side
+        getToken();
+        if(bas.t_token == T_OP_PAREN) { // check for ()
+            getToken();
+            if(bas.t_token != T_CL_PAREN) error(E_CL_PAREN);
+        }
+        else revert_getToken(); // revert the last getToken()
+        par_src = bas.src; bas.src = sub_src;       // ======= switch to the sub side
+    }
     bas.cas[bas.caX].rettype = TYPE_NONE;
     getToken();
     if(bas.t_token == T_AS) {   // check if a result should be returned
@@ -667,7 +685,7 @@ token_t expression(data_t *a, int8_t base_aX) {
             if(tk == T_STRING) {    // constants are pushed straight into the data stack
                 if(bas.flags.no_str_consts == 0) {
                     const char *s = (const char *) bas.s_token;
-                    if(x_malloc((byte **) &bas.S.s, (size_x) (bas.str_const_len + 1)) == NULL) error(E_MEMORY);
+                    if(x_malloc((byte **) &bas.S.s, (size_x) (bas.str_const_len + 1)) == NULL) error(E_MEMORY);    // HERE!
                     memcpy(bas.S.s, s, bas.str_const_len);
                     *(bas.S.s + bas.str_const_len) = 0; // ensure proper string termination
                     bas.acc[bas.acX].s = bas.S.s;
@@ -756,7 +774,7 @@ token_t expression(data_t *a, int8_t base_aX) {
             if(tk == T_COMMA) {
                 if(bas.opX == 0) break;
                 while(bas.opX && bas.ops[bas.opX - 1]->token != T_OP_PAREN) (bas.ops[--bas.opX]->func)();
-                continue;
+                if(bas.opX) continue; else break;
             }
 
             break;      // something else (to be processed outside)
@@ -768,6 +786,10 @@ token_t expression(data_t *a, int8_t base_aX) {
         }
     } while(tk == T_COMMA);
     memcpy(a, &bas.acc[base_aX], sizeof(data_t));
+    if(bas.t_token == T_ENDIF) {    // special case for the short ENDIF form
+        revert_getToken();
+        bas.t_token = T_EOL;
+    }
     return tk;
 }
 
@@ -851,11 +873,11 @@ void statement(void) {
             if(bas.t_token == T_IF) {
                 expression(&bas.Z, 0);
                 if(bas.if_depth++ >= MAX_IFS) error(E_TOO_COMPLEX);
-                if(bas.t_token != T_THEN && bas.t_token != T_ENDIF) getToken(); // check again - must be THEN
-                if(bas.t_token != T_THEN && bas.t_token != T_ENDIF) error(E_NO_THEN);
-                if(((bas.Z.type == TYPE_FPN && bas.Z.f != 0.0) ||
-                        (bas.Z.type == TYPE_INT && bas.Z.i != 0) ||
-                        (bas.Z.type == TYPE_STR && *bas.Z.s != 0)) == 0) {  // unsatisfied condition - search for ELSE or ENDIF
+                if(bas.t_token != T_THEN) getToken();   // check again - must be THEN
+                if(bas.t_token != T_THEN) error(E_NO_THEN);
+                if((bas.Z.type == TYPE_FPN && bas.Z.f == 0.0) ||
+                        (bas.Z.type == TYPE_INT && bas.Z.i == 0) ||
+                        (bas.Z.type == TYPE_STR && *bas.Z.s == 0)) {    // unsatisfied condition - search for ELSE or ENDIF
                     if(*bas.tk_src < 0x03) {    // pre-calculated offset jump
                         uint16_t offs = ((uint16_t) *(bas.tk_src + 2)) << 8;
                         offs += (uint8_t) *(bas.tk_src + 3);
@@ -864,7 +886,8 @@ void statement(void) {
                     else {  // text form - not using pre-calculated offset jump
                         uint8_t extra_depth = 0;
                         bas.flags.no_str_consts = 1;
-                        while((bas.t_token != T_ELSE && bas.t_token != T_ENDIF) || extra_depth) {
+                        while((bas.t_token != T_ELSE && bas.t_token != T_ENDIF)
+                                || extra_depth) {
                             if(bas.t_token == T_ETX) error(E_NO_ENDIF);
                             if(bas.t_token == T_IF) {
                                 if(++extra_depth >= MAX_IFS) error(E_TOO_COMPLEX);
@@ -1030,14 +1053,14 @@ void statement(void) {
                         if(++extra_depth >= MAX_LOOPS) error(E_TOO_COMPLEX);
                     }
                     if(bas.t_token == T_WEND || bas.t_token == T_UNTIL || bas.t_token == T_NEXT) {
-                        if(extra_depth-- == 0) error(E_NO_LOOP);
-                    }
-                    if(extra_depth == 0) {
-                        if(bas.loop[bas.lpX - 1].type == L_FOR && bas.t_token == T_NEXT) break;
-                        if(bas.loop[bas.lpX - 1].type == L_WHILE && bas.t_token == T_WEND) break;
-                        if(bas.loop[bas.lpX - 1].type == L_REPEAT && bas.t_token == T_UNTIL) {
-                            expression(&bas.Z, 0);
-                            break;
+                        if(extra_depth) extra_depth--;
+                        if(extra_depth == 0) {
+                            if(bas.loop[bas.lpX - 1].type == L_FOR && bas.t_token == T_NEXT) break;
+                            if(bas.loop[bas.lpX - 1].type == L_WHILE && bas.t_token == T_WEND) break;
+                            if(bas.loop[bas.lpX - 1].type == L_REPEAT && bas.t_token == T_UNTIL) {
+                                expression(&bas.Z, 0);  // ignore the result but need to go through the expression
+                                break;
+                            }
                         }
                     }
                 }
@@ -1082,12 +1105,12 @@ void statement(void) {
 
             if(bas.t_token == T_GET || bas.t_token == T_INKEY) { // get single keys with and without waiting
                 token_t k = bas.t_token;
-                int32_t port = 0;
+                int32_t h = 0;
                 getToken();
                 if(bas.t_token == T_HASH) {
                     expression(&bas.Z, 0);
                     if(bas.Z.type != TYPE_INT || bas.Z.i < 1 || bas.Z.i > MAX_FILES || bas.t_token != T_COMMA) error(E_FILE);
-                    port = bas.file[bas.Z.i - 1].hdr;
+                    h = bas.file[bas.Z.i - 1].hdr;
                 }
                 else revert_getToken();
                 for(;;) {
@@ -1095,7 +1118,7 @@ void statement(void) {
                     if(bas.t_token != T_IDENTIFIER) error(E_UNKNOWN);   // expecting known variables here
                     var_t *v = (var_t *) bas.s_token;
                     if(v->dim[0]) getIndex(v);
-                    if(port == 0) {
+                    if(h == 0) {
                         bas.Z.i = ((k == T_GET) ? getchar() : kbdGet());
                         if(bas.flags.check_break) {
                             if((kbd_flags & KBD_FLAG_CTRL) && toupper((int) bas.Z.i) == 'C') {  // check for Ctrl-C
@@ -1105,13 +1128,13 @@ void statement(void) {
                         }
                         if(bas.Z.i == 0) bas.Z.i = -1;  // return -1 if no key pressed
                     }
-                    else if(port > 0) {
+                    else if(h > 0) {
                         bas.A.i = 0;
-                        bas.B.i = flash_readFile((port - 1), &bas.file[bas.Z.i - 1].pos, 1, (uint8_t *) &bas.A.i);
+                        bas.B.i = flash_readFile((h - 1), &bas.file[bas.Z.i - 1].pos, 1, (uint8_t *) &bas.A.i);
                         bas.file[bas.Z.i - 1].pos++;
                         bas.Z.i = ((bas.B.i > 0) ? bas.A.i : -1);
                     }
-                    else if(port == -1) {   // input from COM1
+                    else if(h == -1) {  // input from COM1
                         do {
                             if((kbd_flags & KBD_FLAG_CTRL) && toupper((int) bas.Z.i) == 'C') {  // check for Ctrl-C
                                 revert_getToken();
@@ -1138,12 +1161,12 @@ void statement(void) {
             }
 
             if(bas.t_token == T_INPUT) {    // get input
-                int32_t port = 0;
+                int32_t h = 0;
                 getToken();
                 if(bas.t_token == T_HASH) {
                     expression(&bas.Z, 0);
                     if(bas.Z.type != TYPE_INT || bas.Z.i < 1 || bas.Z.i > MAX_FILES || bas.t_token != T_COMMA) error(E_FILE);
-                    port = bas.file[bas.Z.i - 1].hdr;
+                    h = bas.file[bas.Z.i - 1].hdr;
                 }
                 else revert_getToken();
                 for(;;) {
@@ -1156,8 +1179,8 @@ void statement(void) {
                     uint8_t t, sc = 0, sw = 0;
                     int ch;
                     memset(line_buffer, 0, MAX_LINE_LEN + 1);
-                    for(ch = 0; ; ch = 0) {     // enter and edit string in (line_buffer[])
-                        if(port == 0) {         // get input from the keyboard (default)
+                    for(ch = 0; ; ch = 0) { // enter and edit string in (line_buffer[])
+                        if(h == 0) {        // get input from the keyboard (default)
                             for(t = 0; t < ww; t++) {   // print the string
                                 lcdSetPos(LCD_WIDTH - ww + t, posY);
                                 if(sw + t < strlen(line_buffer)) lcdDrawChar(*(line_buffer + sw + t));
@@ -1166,13 +1189,13 @@ void statement(void) {
                             lcdSetPos(LCD_WIDTH - ww + sc, posY);
                             ch = (uint8_t) getchar();
                         }
-                        else if(port > 0) {     // get input from file
+                        else if(h > 0) {    // get input from file
                             bas.A.i = 0;
-                            bas.B.i = flash_readFile((port - 1), &bas.file[bas.Z.i - 1].pos, 1, (uint8_t *) &bas.A.i);
+                            bas.B.i = flash_readFile((h - 1), &bas.file[bas.Z.i - 1].pos, 1, (uint8_t *) &bas.A.i);
                             bas.file[bas.Z.i - 1].pos++;
                             ch = ((bas.B.i > 0) ? (int) bas.A.i : '\r');    // fill finish at the end of the file
                         }
-                        else if(port == -1) {   // get input from COM1
+                        else if(h == -1) {  // get input from COM1
                             do {
                                 if((kbd_flags & KBD_FLAG_CTRL) && toupper((int) bas.Z.i) == 'C') {  // check for Ctrl-C
                                     revert_getToken();
@@ -1204,7 +1227,7 @@ void statement(void) {
                             }
                         }
                     }
-                    if(port == 0) printf("\r\n");
+                    if(h == 0) printf("\r\n");
                     if(v->data.type == TYPE_FPN) {
                         bas.A.f = (FPN_T) strtod(line_buffer, NULL);
                         bas.A.type = TYPE_FPN;
@@ -1230,14 +1253,12 @@ void statement(void) {
             }
 
             if(bas.t_token == T_PRINT) {    // print
-                int32_t port = 0;
                 int32_t h = 0;
                 getToken();
                 if(bas.t_token == T_HASH) {
                     expression(&bas.Z, 0);
                     if(bas.Z.type != TYPE_INT || bas.Z.i < 1 || bas.Z.i > MAX_FILES || bas.t_token != T_COMMA) error(E_FILE);
-                    port = bas.file[bas.Z.i - 1].hdr;
-                    h = bas.Z.i - 1;
+                    h = bas.file[bas.Z.i - 1].hdr;
                 }
                 else revert_getToken();
                 for(;;) {
@@ -1245,7 +1266,7 @@ void statement(void) {
                     if(bas.acX) {
                         popAcc(&bas.A, TYPE_NONE);
                         data_t *a = &bas.A;
-                        if(port == 0) {         // output to the screen
+                        if(h == 0) {        // output to the screen
                             if(a->type == TYPE_INT) printf("%li", (long) a->i);
                             else if(a->type == TYPE_FPN) printf("%1.6G", (double) a->f);
                             else if(a->s) {
@@ -1253,12 +1274,13 @@ void statement(void) {
                                 x_free((byte **) &a->s);
                             }
                         }
-                        else if(port > 0) {     // output (a->s) to file with header page (h)
-
-                            // ###
-
+                        else if(h > 0) {    // add (a->s) to file with header page (h-1)
+                            long l;
+                            char *fn;
+                            flash_getHeader((h - 1), &l, &fn);
+                            if(flash_writeFile(fn, strlen(a->s) + 1, a->s, 'A') < 0) error(E_WRITE);
                         }
-                        else if(port == -1) {   // output to COM1
+                        else if(h == -1) {  // output to COM1
                             memset(bas.str_buf, 0, sizeof(bas.str_buf));
                             char *p;
                             if(a->type == TYPE_INT) {
@@ -1277,13 +1299,15 @@ void statement(void) {
                     }
                     if(bas.t_token == T_COMMA || bas.t_token == T_SEMICOLON) {
                         if(bas.t_token == T_COMMA) {
-                            if(port == 0) printf("\t");
-                            else if(port > 0) { // output "\t" to file with header page (h)
-
-                                // ###
-
+                            if(h == 0) printf("\t");
+                            else if(h > 0) {    // add "\t" to file with header page (h-1)
+                                long l;
+                                char *fn;
+                                flash_getHeader((h - 1), &l, &fn);
+                                char s[2] = "\t";
+                                if(flash_writeFile(fn, 2, s, 'A') < 0) error(E_WRITE);
                             }
-                            else if(port == -1) _outbyte('\t');
+                            else if(h == -1) _outbyte('\t');
                         }
                         getToken(); // look ahead what is following
                         if(bas.t_token == T_EOL || bas.t_token == T_COLON || bas.t_token == T_ETX) break;
@@ -1291,13 +1315,15 @@ void statement(void) {
                         continue;
                     }
                     if(bas.t_token == T_EOL || bas.t_token == T_COLON || bas.t_token == T_ETX) {
-                        if(port == 0) printf("\r\n");
-                        else if(port > 0) {     // output "\r\n" to file with header page (h)
-
-                            // ###
-
+                        if(h == 0) printf("\r\n");
+                        else if(h > 0) {    // add "\r\n" to file with header page (h-1)
+                            long l;
+                            char *fn;
+                            flash_getHeader((h - 1), &l, &fn);
+                            char s[3] = "\r\n";
+                            if(flash_writeFile(fn, 3, s, 'A') < 0) error(E_WRITE);
                         }
-                        else if(port == -1) { _outbyte('\r'); _outbyte('\n'); }
+                        else if(h == -1) { _outbyte('\r'); _outbyte('\n'); }
                         break;
                     }
                     error(E_SYNTAX);
@@ -1308,7 +1334,7 @@ void statement(void) {
         }
 
         if(bas.t_token == T_OPEN) {
-            int32_t br, port = 0;
+            int32_t br, h = -1;
             expression(&bas.Z, 0);
             char *fn = bas.Z.s;
             if(bas.Z.type != TYPE_STR) error(E_TYPE);   // filename must be string
@@ -1317,9 +1343,13 @@ void statement(void) {
                 while(*p == ' ') p++;
                 br = (int32_t) strtol(p, &p, 10);
                 if((*p && *p != ' ') || br < 75 || br > 2000000) error(E_SYNTAX);
-                port = -1;
+                h = -2; // will become -1 after the increment later
             }
-            else port = flash_findFile(fn); // file name
+            else {
+                h = flash_findFile(fn);     // check if this file exists
+                if(h == -1) h = flash_writeFile(fn, 0, NULL, 'W');  // create new file
+                if(h == -1) error(E_WRITE); // unable to create new file
+            }
             x_free((byte **) &fn);
             if(bas.t_token != T_AS) error(E_SYNTAX);    // must be followed by AS
             getToken();
@@ -1327,8 +1357,9 @@ void statement(void) {
             expression(&bas.Z, 0);
             if(bas.Z.type != TYPE_INT || bas.Z.i < 1 || bas.Z.i > MAX_FILES) error(E_FILE);
             bas.Z.i--;
-            if(port == -1) openXMPort((uint32_t) br);
-            bas.file[bas.Z.i].hdr = port;
+            h++;    // the reason for this is to distinguish between screen and header page 0
+            if(h == -1) openXMPort((uint32_t) br);
+            bas.file[bas.Z.i].hdr = h;
             bas.file[bas.Z.i].pos = 0;
             continue;
         }
@@ -1387,6 +1418,7 @@ error_code_t runBasic(char **source, char use_codes) {
     srand((unsigned int) *source + *(*source)); // any better way to seed the random numbers?
     bas.entry = bas.src  = *source;
     if(bas.src == NULL || *bas.src == ETX) return E_OK;   // nothing to execute
+    bas.flags.use_codes = use_codes;
     int ee = setjmp(bas.err_env);
     if(ee) goto end_here;
 
@@ -1403,7 +1435,7 @@ error_code_t runBasic(char **source, char use_codes) {
     memset(&bas.cas, 0, sizeof(bas.cas)); bas.caX = 0;      // clear the sub calls stack
     memset(bas.str_buf, 0, sizeof(bas.str_buf));
     bas.vars = NULL; bas.subs = NULL;
-    bas.flags.use_codes = 0; bas.flags.syntax_style = 0;
+    bas.flags.syntax_style = 0;
     bas.data_entry = bas.data_current = NULL;
     bas.flags.check_break = 1;  // by default enable Ctrl-C break
 
@@ -1469,7 +1501,7 @@ error_code_t runBasic(char **source, char use_codes) {
     bas.flags.no_str_consts = 1;
     bas.tk_src = bas.src = bas.entry;
     bas.t_token = T_UNKNOWN;
-    if(use_codes) {
+    if(bas.flags.use_codes) {
         while(bas.t_token != T_ETX) {
             if(compile_comments()) continue;
             getToken();
@@ -1489,7 +1521,8 @@ error_code_t runBasic(char **source, char use_codes) {
                             uint8_t bfscf = bas.flags.no_str_consts;
                             char *loc = bas.tk_src; // this is where the 16-bit offset will be recorded
                             bas.flags.no_str_consts = 1;
-                            while((bas.t_token != T_ELSE && bas.t_token != T_ENDIF) || extra_depth) {
+                            while((bas.t_token != T_ELSE && bas.t_token != T_ENDIF)
+                                    || extra_depth) {
                                 if(bas.t_token == T_ETX) error(E_NO_ENDIF);
                                 if(bas.t_token == T_IF) {
                                     if(++extra_depth >= MAX_IFS) error(E_TOO_COMPLEX);
@@ -1554,19 +1587,21 @@ error_code_t runBasic(char **source, char use_codes) {
 
     // this is where the code gets executed
     bas.flags.no_str_consts = 0;
-    bas.flags.use_codes = use_codes;
     while(*bas.src != ETX) statement();
     error(E_OK);        // successful execution
 
     end_here:;
 
+    error_code_t ecode = bas.error_code;
+    bas.error_code = E_OK;
+
     // restore the original source from pseudo-codes
-    if(use_codes) {
+    if(bas.flags.use_codes) {
         bas.data_current = bas.src; // use (*data_current) to store the original source point on exit
         bas.flags.no_str_consts = 1;
         bas.tk_src = bas.src = bas.entry;
         bas.t_token = T_UNKNOWN;
-        while(bas.t_token != T_ETX) {
+        while(bas.t_token != T_ETX && bas.error_code == E_OK) {
             if(compile_comments()) continue;
             getToken();
             if(bas.t_token == T_ETX || bas.t_token == T_EOL || bas.t_token == T_NUMBER || bas.t_token == T_STRING) continue;
@@ -1595,7 +1630,7 @@ error_code_t runBasic(char **source, char use_codes) {
                             break;
                     }
                 }
-                //else error(E_UNDEFINED);
+                // else what?
             }
             else getId();
         }
@@ -1603,7 +1638,8 @@ error_code_t runBasic(char **source, char use_codes) {
     }
 
     *source = bas.src;      // update the source position on exit
+    //if(ecode == E_MEMORY) x_list_alloc();   // debug allocated memory on exit
     x_defrag();
-    //x_list_alloc(); // debug allocated memory on exit
-    return bas.error_code;  // here the execution terminates with an error (or OK)
+    lcdCursorOn();
+    return ecode;   // here the execution terminates with an error (or OK)
 }

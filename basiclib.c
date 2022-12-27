@@ -228,7 +228,11 @@ void op_equal(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !(bas.A.i != bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !(fabs(bas.A.f - bas.B.f) >= FPN_ACCURACY);
-    else bas.Z.i = !strcmp(bas.A.s, bas.B.s);
+    else {
+        bas.Z.i = !strcmp(bas.A.s, bas.B.s);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -240,7 +244,11 @@ void op_not_equal(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !(bas.A.i == bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !(fabs(bas.A.f - bas.B.f) < FPN_ACCURACY);
-    else bas.Z.i = !!strcmp(bas.A.s, bas.B.s);
+    else {
+        bas.Z.i = !!strcmp(bas.A.s, bas.B.s);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -252,7 +260,11 @@ void op_sm_equal(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !!(bas.A.i <= bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !!(bas.A.f <= bas.B.f);
-    else bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) <= 0);
+    else {
+        bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) <= 0);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -264,7 +276,11 @@ void op_smaller(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !!(bas.A.i < bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !!(bas.A.f < bas.B.f);
-    else bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) < 0);
+    else {
+        bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) < 0);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -276,7 +292,11 @@ void op_gr_equal(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !!(bas.A.i >= bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !!(bas.A.f >= bas.B.f);
-    else bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) >= 0);
+    else {
+        bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) >= 0);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -288,7 +308,11 @@ void op_greater(void) {
     promote();
     if(bas.A.type == TYPE_INT) bas.Z.i = !!(bas.A.i > bas.B.i);
     else if(bas.A.type == TYPE_FPN) bas.Z.i = !!(bas.A.f > bas.B.f);
-    else bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) > 0);
+    else {
+        bas.Z.i = !!(strcmp(bas.A.s, bas.B.s) > 0);
+        x_free((byte **) &bas.A.s);
+        x_free((byte **) &bas.B.s);
+    }
     bas.Z.type = TYPE_INT;
     pushAcc(&bas.Z);
 }
@@ -747,7 +771,7 @@ void cm_selcht(void) {
 
 void cm_cursor(void) {
     popAcc(&bas.A, TYPE_INT);
-    lcdCtrl((uint8_t) bas.A.i & (CURSOR | BLINK));
+    lcdCtrl(((uint8_t) bas.A.i & (CURSOR | BLINK)) | DISPLAY);
 }
 
 
@@ -817,7 +841,7 @@ void cm_else(void) {
             getToken();
         }
         bas.flags.no_str_consts = 0;
-        bas.if_depth--;
+        if(bas.t_token == T_ENDIF) bas.if_depth--;  // case closed
     }
 }
 
@@ -960,4 +984,31 @@ void cm_clear(void) {
         } while(0);
     }
     else releaseVars(NULL); // undefine all variables
+}
+
+
+void cm_delete(void) {
+    popAcc(&bas.A, TYPE_STR);
+    int32_t p = (int32_t) flash_findFile(bas.A.s);
+    if(p >= 0) flash_deleteFile(p);
+    x_free((byte **) &bas.A.s);
+}
+
+
+void cm_rename(void) {
+    popAcc(&bas.B, TYPE_STR);   // new file name
+    popAcc(&bas.A, TYPE_STR);   // old file name
+    int32_t p = (int32_t) flash_findFile(bas.A.s);
+    if(p >= 0) flash_renameFile(p, bas.B.s);
+    x_free((byte **) &bas.A.s);
+    x_free((byte **) &bas.B.s);
+}
+
+
+void fn_exist(void) {
+    popAcc(&bas.A, TYPE_STR);
+    bas.Z.i = !!flash_findFile(bas.A.s);
+    bas.Z.type = TYPE_INT;
+    pushAcc(&bas.Z);
+    x_free((byte **) &bas.A.s);
 }

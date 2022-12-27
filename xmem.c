@@ -13,7 +13,7 @@
 typedef struct {
     void **cvar;   /* C variable */
 	byte *data;    /* pointer to the allocated data block */
-	size_x len;    /* length of the allocated block; negative means free with the absolute size */
+	size_x len;    /* length of the allocated block */
     #if XBLK_NAME_LEN > 0
         char name[XBLK_NAME_LEN + 1];    /* up to four letters for name (optional) */
     #endif
@@ -23,11 +23,8 @@ typedef struct {
 static byte *dcur;		/* points to the first unallocated data byte */
 static xhdr_t *hcur;	/* points to the current last header */
 
-/* dynamic memory array */
-byte *pMEMORY;
-unsigned long xmem_bytes;
-
-unsigned short defrag_cnt = 0;
+byte *pMEMORY;  /* dynamic memory array */
+//unsigned short defrag_cnt = 0;
 
 
 size_x x_meminit(void) {
@@ -192,41 +189,6 @@ void x_list_alloc(void) {
 }
 
 
-/* optimise the memory */
-void x_defrag(void) {
-    defrag_run++;
-    uint8_t rf = 0;
-    xhdr_t *t, *h = pTOP;
-    while(--h >= hcur) {
-        /*if(h->cvar && *(h->cvar) != h->data) h->cvar = NULL;*/    /* remove orphaned blocks */
-        rf = 0;
-        t = pTOP;
-        while(--t >= hcur) {
-            if((h->data + h->len) == t->data && t-> len && t->cvar == NULL) {   /* the next block is free */
-                if(h->cvar == NULL || h->len >= (t->len * 3)) {
-                    h->len += t->len;   /* combine the two blocks */
-                    t->len = 0;         /* mark the header for removal */
-                    t = pTOP;           /* restart the inner loop */
-                    rf = 1;
-                }
-                else break;
-            }
-        }
-        if(rf) h = pTOP;    /* restart the outer loop */
-    }
-    dcur = pMEMORY;
-    h = pTOP;
-    while(--h >= hcur) {    /* find the top of actual data blocks */
-        if(h->cvar && (h->data + h->len) > dcur) dcur = h->data + h->len;
-    }
-    t = h = pTOP;
-    while(--h >= hcur) {    /* remove the marked headers (those with length 0) */
-        if(h->len && h->data < dcur) memmove(--t, h, sizeof(xhdr_t));
-    }
-    hcur = t;
-}
-
-
 /* aggressive memory optimisation by full reorder */
 void x_defrag_ultra(void) {
     defrag_run++;
@@ -258,6 +220,41 @@ void x_defrag_ultra(void) {
 }
 
 
+/* optimise the memory */
+void x_defrag(void) {
+    defrag_run++;
+    uint8_t rf = 0;
+    xhdr_t *t, *h = pTOP;
+    while(--h >= hcur) {
+        /*if(h->cvar && *(h->cvar) != h->data) h->cvar = NULL;*/    /* remove orphaned blocks */
+        rf = 0;
+        t = pTOP;
+        while(--t >= hcur) {
+            if((h->data + h->len) == t->data && t-> len && t->cvar == NULL) {   /* the next block is free */
+                if(h->cvar == NULL) {
+                    h->len += t->len;   /* combine the two blocks */
+                    t->len = 0;         /* mark the header for removal */
+                    t = pTOP;           /* restart the inner loop */
+                    rf = 1;
+                }
+                else break;
+            }
+        }
+        if(rf) h = pTOP;    /* restart the outer loop */
+    }
+    dcur = pMEMORY;
+    h = pTOP;
+    while(--h >= hcur) {    /* find the new data top */
+        if(h->cvar && (h->data + h->len) > dcur) dcur = h->data + h->len;
+    }
+    t = h = pTOP;
+    while(--h >= hcur) {    /* remove the marked headers (those with length 0) */
+        if(h->len) memmove(--t, h, sizeof(xhdr_t));
+    }
+    hcur = t;
+}
+
+
 int x_free(byte **var) {
     if(var == NULL || (*var == NULL)) return 0;
     if((*var < pMEMORY) || (*var > (byte *) pTOP)) return -1;
@@ -265,7 +262,7 @@ int x_free(byte **var) {
     if(h == NULL) return -1;
     *var = NULL;
     h->cvar = NULL;     /* mark the block as free */
-    if((++defrag_cnt % 31) == 0) x_defrag();    /* run memory defragmentation from time to time */
+    //if((++defrag_cnt % 31) == 0) x_defrag();    /* run memory defragmentation from time to time */
     return 0;
 }
 
@@ -273,7 +270,7 @@ int x_free(byte **var) {
 void *x_malloc(byte **var, size_x sz) {
     if(var == NULL || sz == 0) { x_free(var); return NULL; }    /* size 0 is request to release the block */
     #if SIZE_MAX > INT32_MAX
-    if(sz > INT32_MAX) return NULL;     /* unsupported block size */
+    if(sz > INT32_MAX) return NULL; /* unsupported block size */
     #endif
     if(*var && (*var < pMEMORY || *var > (byte *) pTOP)) return NULL;
     #if XMEM_ALIGN > 0
@@ -281,8 +278,8 @@ void *x_malloc(byte **var, size_x sz) {
     #endif
     int8_t attempts = 2;
     retry:;
-    if(attempts < 0) return NULL;   /* end of story */
-    xhdr_t *z = findxhdr(*var); /* possible outcomes:
+    if(attempts < 0) return NULL;   /* the story ends here */
+    xhdr_t *z = findxhdr(*var);     /* possible outcomes:
                                     (!*var && !z) - a new block to be allocated
                                     (!*var && z)  - impossible
                                     (*var && !z)  - error (the variable is unaware that its block has been freed)
@@ -292,7 +289,7 @@ void *x_malloc(byte **var, size_x sz) {
     if(z) {
         if(sz == z->len) return z->data;    /* nothing is needed to do */
         if((z->data + z->len) == dcur) {    /* luckily it happens that (z) is the last allocated block */
-            if((z->data + sz) > (byte *) hcur) {
+            if((byte *) (z->data + sz) > (byte *) hcur) {
                 x_defrag(); attempts--; goto retry;
             }
             if(sz > z->len) memset((z->data + z->len), 0, (size_t) (sz - z->len));  /* clear the expansion */
@@ -311,8 +308,8 @@ void *x_malloc(byte **var, size_x sz) {
         }
     }
     if(h) {     /* a suitable free block with length >= sz is found */
-        if(h->len == sz) dptr = h->data;        /* an exact match only requires assigning the variable to the block */
-        else {  /* not an exact match; try to split the block */
+        if(h->len <= (sz + (sz / 5))) dptr = h->data;   /* up to 110% of the required size is acceptable */
+        else {  /* too large; try to split the block */
             if(attempts) {
                 if((byte *) (hcur - 1) < dcur) {    /* no room for a new header */
                     x_defrag(); attempts--; goto retry;

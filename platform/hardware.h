@@ -7,11 +7,14 @@
 // global RAM buffer for flash and other operations
 // * IMPORTANT: the size of the buffer MUST be at least as much as the size of erasable flash sector
 // * IMPORTANT: the address is hardware-dependent and fixed in PIC18 !!
-__at(0x3700)
+#ifdef _NVMCON1_CMD_POSN    // newer (Q-series) PIC18 models have the system buffer at a fixed address
+    __at(0x3700)            // Q83:x3700; Q43:x2500
+#endif
 uint8_t system_buffer[256];
 
+
 // default CPU frequency in MHz when the system is working
-#define _DEF_FREQ_MHZ   8
+#define _DEF_FREQ_MHZ   12
 
 // UART parameters for transmit/receive operations in the editor
 #define TX_PIN      B,3

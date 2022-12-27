@@ -51,9 +51,9 @@ uint8_t posX, posY;         // current cursor coordinates
 #define BLINK       BIT(0)
 
 // ROM table codes for lcdSelectROM()
-#define ROM_A       0x00
-#define ROM_B       0x04
-#define ROM_C       0x0C
+#define ROM_A       0b00
+#define ROM_B       0b01
+#define ROM_C       0b10
 
 // high-level functions
 void lcdInit(void);

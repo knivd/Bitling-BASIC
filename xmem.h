@@ -2,7 +2,7 @@
 #define XMEM_H
 
 /* total size of the managed dynamic memory in quarter-KBs (256-byte pages) */
-#define MEMORY_SIZE_QKB  42
+#define MEMORY_SIZE_QKB  41
 
 /* 2^(XMEM_ALIGN) bytes alignment boundary when allocating memory blocks */
 /* this typically refers to the data bus width of the processor */
@@ -24,7 +24,8 @@ __attribute__ ((aligned(1ul << XMEM_ALIGN)))
 #endif
 byte MEMORY[MEMORY_SIZE_QKB * 256ul];
 
-uint32_t defrag_run;    /* counter of performed defragmentations (mostly for testing) */
+unsigned long xmem_bytes;   /* number of XMEM bytes after initialisation */
+unsigned long defrag_run;   /* counter of performed defragmentations (mostly for testing) */
 
 /* initialise or reinitialise the entire memory */
 /* needs to be called initially before referring to any other xmem function */

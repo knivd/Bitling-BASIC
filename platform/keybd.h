@@ -92,8 +92,8 @@ uint8_t kbdGet(void);   // doesn't wait
 
 // internal constants
 #define KBD_ADC_TRIM    1       // number of LSB bits to trim from the ADC reading
-#define KEY_THRESHOLD_C 2027    // capacitive ADC threshold value change to consider key pressed (between 1 and 255)
-#define KEY_THRESHOLD_R 1024    // resistive ADC threshold value change to consider key pressed (between 1 and 255)
+#define KEY_THRESHOLD_C 2007//###2027    // capacitive ADC threshold value change to consider key pressed (between 1 and 255)
+#define KEY_THRESHOLD_R 1536    // resistive ADC threshold value change to consider key pressed (between 1 and 255)
 
 // standard library functions
 char *fgets(char *str, int num, FILE *stream);

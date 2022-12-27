@@ -43,7 +43,7 @@ var string s[5]     ' array of five zero-terminated strings
 
 IF  <expression>  THEN
 { ELSE }
-END IF  or  ENDIF
+END IF  or  ENDIF  or  !
 
 FOR  <variable>  =  <expression>  TO  <expression>  { STEP <expression> }
 NEXT  { <variable> }
@@ -70,6 +70,7 @@ SUB     <name> {  (  <type>  {  @  }  <variable>  { ,  <type>  ...  }  )  }
 FUNC    <name> {  (  <type>  {  @  }  <variable>  { ,  <type>  ...  }  )  }  {  AS  <type>  }
 RETURN  {  value  }
 END SUB  or  ENDSUB
+END FUNC  or  ENDFUNC
 GOSUB   <sub_name(...)>      ' optional calling format for subs
 
 
@@ -87,6 +88,8 @@ GET     [ # fileN ]  variable  { ,  variable ... }
 INKEY   [ # fileN ]  variable
 OPEN    <str>   AS   # fileN
 CLOSE   # fileN
+DELETE  <filename>
+RENAME  <old_fname>, <new_fname>
 DATA    expression  { ,  expression ... }
 READ    variable  { ,  variable ... }
 REWIND                      ' return to the first DATA element
@@ -132,7 +135,7 @@ HTAN    (val)
 COTAN   (val)
 FREE    ()                  ' return the largest free block in memory
 TDRAM   ()                  ' return the text display RAM address
-TDTDT   ()                  ' text display width
+TDWDT   ()                  ' text display width
 TDHGT   ()                  ' text display height
 PEEK    (addr)              ' 0 and positive numbers: RAM address, negative numbers: ROM address-1
 ASC     (str)               ' character (first in string) to ASCII
@@ -147,6 +150,7 @@ INSTR   (substr, str, start)
 TIMER   (value)             ' read system millisecond incremental counter; any value different than 0 first loads the counter
 AIN     (channel)           ' supported channels are 0..7
 DIN     (channel)           ' supported channels are 0..7
+EXIST   <filename>          ' will return 1 if true or 0 if not
 
 */
 #endif
@@ -157,7 +161,7 @@ DIN     (channel)           ' supported channels are 0..7
 #include "common.h"
 
 #define MAX_DIMENSIONS  5   // maximum number of dimensions in arrays
-#define MAX_TERMS       25  // maximum terms in an expression
+#define MAX_TERMS       46  // maximum terms in an expression
 #define MAX_IFS         10  // maximum nested IFs
 #define MAX_LOOPS       10  // maximum nested loops FOR/WHILE/REPEAT
 #define MAX_CALLS       10  // maximum sub call nesting
@@ -192,15 +196,15 @@ typedef enum {
     T_RND, T_ABS, T_ROUND, T_TRUNC, T_FRACT, T_LOGN, T_LOGD, T_EXP, T_SQR, T_CBR,
     T_SIN, T_ASIN, T_HSIN, T_COS, T_ACOS, T_HCOS, T_TAN, T_ATAN, T_HTAN, T_COTAN,
     T_FREE, T_PEEK, T_ASC, T_VAL, T_STR, T_LEN, T_LEFT, T_RIGHT, T_MID, T_INSTR, T_CHR,
-    T_TDRAM, T_TDWIDTH, T_TDHEIGHT, T_TIMER, T_AIN, T_DIN,
+    T_TDRAM, T_TDWIDTH, T_TDHEIGHT, T_TIMER, T_AIN, T_DIN, T_EXIST,
 
     T_COMMAND_,     // start of commands (not return value); must be after functions
-    T_VAR, T_LET, T_END, T_IF, T_THEN, T_ELSE, T_ENDIF, T_CONTINUE, T_EXIT, T_FOR,
-    T_TO, T_STEP, T_NEXT, T_WHILE, T_WEND, T_REPEAT, T_UNTIL, T_RETURN, T_GOTO, T_LABEL,
-    T_GOSUB, T_SUB, T_ENDSUB, T_PRINT, T_QUESTION, T_DATA, T_READ, T_REWIND, T_POP,
+    T_VAR, T_LET, T_END, T_IF, T_THEN, T_ELSE, T_ENDIF, T_CONTINUE, T_EXIT,
+    T_FOR, T_TO, T_STEP, T_NEXT, T_WHILE, T_WEND, T_REPEAT, T_UNTIL, T_RETURN, T_GOTO,
+    T_LABEL, T_GOSUB, T_SUB, T_ENDSUB, T_PRINT, T_DATA, T_READ, T_REWIND, T_POP,
     T_POKE, T_RESET, T_SLEEP, T_INKEY, T_GET, T_INPUT, T_CLS, T_HLOC, T_VLOC, T_PUTCH,
-    T_DEFCH, T_SELCHT, T_CURSOR, T_SCROLL, T_TDREFRESH, T_WAIT, T_CLEAR, T_OPEN, T_CLOSE,
-    T_DOUT
+    T_DEFCH, T_SELCHT, T_CURSOR, T_SCROLL, T_TDREFRESH, T_WAIT, T_CLEAR, T_DOUT, T_OPEN,
+    T_CLOSE, T_DELETE, T_RENAME
 
 } token_t;
 
@@ -235,7 +239,7 @@ typedef struct _sub_t {
 } sub_t;
 
 typedef struct {
-    int32_t hdr;        // (0) screen; (-1) COM1; (1...) (header_page+1) of a file
+    int32_t hdr;        // (-1) COM1; (0) screen; (1...) (header_page-1) of a file
     int32_t pos;        // meaningful for files only; last position in the file
 } file_t;
 
@@ -275,7 +279,8 @@ typedef enum {
     E_UNKNOWN,
     E_NO_DATA,
     E_FILE,
-    E_CHANNEL
+    E_CHANNEL,
+    E_WRITE
 } error_code_t;
 
 // error structure

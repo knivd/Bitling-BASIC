@@ -99,12 +99,12 @@ void lcdCmd(uint8_t data) {
 }
 
 
-// select ROM table 1..3
+// select ROM table 0..3
 void lcdSelectROM(uint8_t n) {
-    if(n < 1 || n > 3) return;  // invalid ROM number
+    if(n > 3) return;   // invalid ROM number
     lcdCmd(0x2A);
     lcdCmd(0x72);
-    lcdData((uint8_t) ((n - 1) << 2));
+    lcdData((uint8_t) (n << 2));
     lcdCmd(0x28);
 }
 
@@ -168,7 +168,7 @@ void lcdUpdateScreen(void) {
 	for(r = 0; r < LCD_HEIGHT; r++) {
 		for(t = 0; t < LCD_WIDTH; t++) {
 			lcdSetPos(t, r);
-			lcdData(DMEM[r][t] & 0x7f);
+			lcdData(DMEM[r][t]);
 		}
 	}
 }

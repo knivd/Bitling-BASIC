@@ -1,3 +1,4 @@
+#include "../editor.h"  // only needed for the ETX value
 #include "flash.h"
 
 // these are the hardware-dependent functions
@@ -5,9 +6,7 @@
 
 unsigned char flash_readByte(long page, long offset) {
     long addr = FLASH_START_ADDRESS + (page * FLASH_WRITABLE_BYTES) + offset;
-    TBLPTRU = (unsigned char) (addr >> 16);
-    TBLPTRH = (unsigned char) (addr >> 8);
-    TBLPTRL = (unsigned char) addr;
+    TBLPTR = (__uint24) addr;
     asm("TBLRD*");
     return (TABLAT);
 }
@@ -24,53 +23,51 @@ void flash_writePage(long page, unsigned char *buffer) {
     memmove(system_buffer, buffer, FLASH_WRITABLE_BYTES);   // copy application buffer contents to the buffer RAM
     page *= FLASH_WRITABLE_BYTES;
     page += FLASH_START_ADDRESS;
-    #if _ROMSIZE > 0x10000
-        NVMADRU = (unsigned char) (page >> 16);
-    #endif
-    NVMADRH = (unsigned char) (page >> 8);
-    NVMADRL = (unsigned char) page;
     INTCON0bits.GIE = 0;        // disable interrupts
-    #ifdef _NVMCON1_CMD_POSN    // newer (Q-series) PIC18 models
-        NVMCON1bits.CMD = 0x05; // page write command
+    #ifdef _NVMCON1_CMD_POSN    // PIC18 Q-series
+        NVMADR = (__uint24) page;
+        NVMCON1bits.CMD = 0b101;        // page write command
         NVMLOCK = 0x55; NVMLOCK = 0xAA; // unlock sequence
         NVMCON0bits.GO = 1;     // start operation
         while(NVMCON0bits.GO);  // wait for the operation to complete
         NVMCON1bits.CMD = 0x00;
-    #else                       // older (K-series) PIC18 models
+    #else                       // PIC18 K-series
+        TBLPTR = (__uint24) page;
         NVMCON1bits.REG0 = 0;   // point to program flash memory
         NVMCON1bits.REG1 = 1;   // access to program flash memory
         NVMCON1bits.WREN = 1;   // enable write to memory
         NVMCON1bits.FREE = 0;   // do not erase
         NVMCON2 = 0x55; NVMCON2 = 0xAA; // unlock sequence
         NVMCON1bits.WR = 1;     // write (CPU stalls)
+        NOP();
+        NVMCON1bits.WREN = 0;
     #endif
     INTCON0bits.GIE = GIEBitValue;
 }
 
 
-void flash_eraseSector(long page) {
+void flash_erasePage(long page) {
     unsigned char GIEBitValue = INTCON0bits.GIE;    // save interrupt enable bit value
     page *= FLASH_WRITABLE_BYTES;
     page += FLASH_START_ADDRESS;
-    #if _ROMSIZE > 0x10000
-        NVMADRU = (unsigned char) (page >> 16);
-    #endif
-    NVMADRH = (unsigned char) (page >> 8);
-    NVMADRL = (unsigned char) page;
     INTCON0bits.GIE = 0;        // disable interrupts
-    #ifdef _NVMCON1_CMD_POSN    // newer (Q-series) PIC18 models
-        NVMCON1bits.CMD = 0x06; // page erase command
+    #ifdef _NVMCON1_CMD_POSN    // PIC18 Q-series
+        NVMADR = (__uint24) page;
+        NVMCON1bits.CMD = 0b110;        // page erase command
         NVMLOCK = 0x55; NVMLOCK = 0xAA; // unlock sequence
         NVMCON0bits.GO = 1;     // start operation
         while(NVMCON0bits.GO);  // wait for the operation to complete
         NVMCON1bits.CMD = 0x00;
-    #else                       // older (K-series) PIC18 models
+    #else                       // PIC18 K-series
+        TBLPTR = (__uint24) page;
         NVMCON1bits.REG0 = 0;   // point to program flash memory
         NVMCON1bits.REG1 = 1;   // access to program flash memory
         NVMCON1bits.WREN = 1;   // enable write to memory
         NVMCON1bits.FREE = 1;   // enable block erase operation
         NVMCON2 = 0x55; NVMCON2 = 0xAA; // unlock sequence
         NVMCON1bits.WR = 1;     // start erase (CPU stalls)
+        NOP();
+        NVMCON1bits.WREN = 0;
     #endif
     INTCON0bits.GIE = GIEBitValue;
 }
@@ -78,38 +75,77 @@ void flash_eraseSector(long page) {
 // ==================================================================================================
 
 
-long flash_writeFile(char *name, long len, void *data) {
+// convert file length in bytes into number of writable pages needed for it
+long flash_b2p(long len) {
+    if(len % FLASH_WRITABLE_BYTES) len += FLASH_WRITABLE_BYTES;
+    len /= FLASH_WRITABLE_BYTES;
+    return len;
+}
+
+
+long flash_writeFile(char *name, long len, void *data, char opt) {
     #if FLASH_SIZE_SECTORS > 0
-        if(data == NULL) return -1;
-        len += FLASH_FILE_HEADER;   // add bytes needed for the file header
-        long needed = (len / FLASH_WRITABLE_BYTES); // calculate the number of needed pages
-        if(len % FLASH_WRITABLE_BYTES) needed++;
-        long b = -1;
-        long p = 0;
-        while(p < FLASH_NUMBER_PAGES && b) {
-            flash_getHeader(p, &b, NULL);
+        long avlp = 0, b = -1;
+        while(avlp < FLASH_NUMBER_PAGES && b) { // find the first available page in (avlp)
+            flash_getHeader(avlp, &b, NULL);
             if(b == 0 || b == -1) { b = 0; break; }
-            if(b % FLASH_WRITABLE_BYTES) b += FLASH_WRITABLE_BYTES;
-            b /= FLASH_WRITABLE_BYTES;
-            p += (unsigned long) b;
+            avlp += flash_b2p(FLASH_FILE_HEADER + b);
         }
-        if(b || (FLASH_NUMBER_PAGES - p) < needed) return -1;   // not enough free space
-        memset(system_buffer, 0, FLASH_WRITABLE_BYTES);
-        len -= FLASH_FILE_HEADER;   // now counting only the actual data
-        strncpy((char *) system_buffer + 4, name, (FLASH_FILE_HEADER - 5));
-        *(system_buffer + 3) = (unsigned char) (len >> 24);
-        *(system_buffer + 2) = (unsigned char) (len >> 16);
-        *(system_buffer + 1) = (unsigned char) (len >> 8);
-        *system_buffer = (unsigned char) len;
-        long wp = p;
+        long cl = 0;    // current file length in bytes
+        long cp = flash_findFile(name); // current file length in pages
+        long p = avlp;  // page from where will start writing
+        if(cp >= 0) {   // this file already exists so it will be an append operation
+            char *n;
+            flash_getHeader(cp, &cl, &n);   // get the file length
+            p = cp;
+            cp = flash_b2p(FLASH_FILE_HEADER + cl);
+        }
+        else cp = 0;
+        if(opt == 'A' || opt == 'a') len += cl;         // add the current file length
+        else if(opt != 'W' && opt != 'w') return -1;    // unknown operation
+        long np = flash_b2p(FLASH_FILE_HEADER + len);               // calculate the number of needed pages
+        if(b || (p + (np - cp)) > FLASH_NUMBER_PAGES) return -1;    // not enough free space
+        long diff = flash_b2p(FLASH_FILE_HEADER + len) - flash_b2p(FLASH_FILE_HEADER + cl); // difference in pages
+        long wp;
+        if(cp && diff > 0) {        // file is expanding
+            for(wp = avlp - 1; wp >= p; wp--) {
+                flash_readPage(wp, system_buffer);
+                flash_erasePage(wp + diff);
+                flash_writePage(wp + diff, system_buffer);
+            }
+        }
+        else if(cp && diff < 0) {   // file is shrinking
+            for(wp = p; wp < avlp; wp++) {
+                flash_readPage(wp, system_buffer);
+                flash_erasePage(wp + diff);
+                flash_writePage(wp + diff, system_buffer);
+            }
+        }
         unsigned char *dp = (unsigned char *) data;
         b = FLASH_FILE_HEADER;      // start inserting data after the file header
-        while(len) {
-            for( ; len && b < FLASH_WRITABLE_BYTES; len--) *(system_buffer + b++) = *(dp++);
+        wp = p; diff = 0;
+        do {
+            flash_readPage(wp, system_buffer);
+            flash_erasePage(wp);    // NOTE: this will only work with equal size of an erasable page and a writable page
+            if(diff == 0) {         // create file header in the beginning of the first page of the file
+                memset(system_buffer, 0, FLASH_WRITABLE_BYTES);
+                strncpy((char *) system_buffer + 4, name, (FLASH_FILE_HEADER - 5));
+                *(system_buffer + 3) = (unsigned char) (len >> 24);
+                *(system_buffer + 2) = (unsigned char) (len >> 16);
+                *(system_buffer + 1) = (unsigned char) (len >> 8);
+                *system_buffer = (unsigned char) len;
+            }
+            for( ; len && b < FLASH_WRITABLE_BYTES; len--, diff++) {
+                if(diff >= cl || opt == 'W' || opt == 'w') *(system_buffer + b++) = *(dp++);
+            }
+            if(len == 0) {
+                if(b < FLASH_WRITABLE_BYTES) *(system_buffer + b++) = 0;    // fill the remainder of the last page
+                while(b < FLASH_WRITABLE_BYTES) *(system_buffer + b++) = ETX;
+            }
             flash_writePage(wp++, system_buffer);
             memset(system_buffer, 0, FLASH_WRITABLE_BYTES);
             b = 0;
-        }
+        } while(len > 0);
         return p;       // return the starting page of the file
     #else
         return -1;
@@ -159,7 +195,7 @@ void flash_renameFile(long p, char *name) {
         }
         memset((system_buffer + ((p % FLASH_ERASABLE_SECTOR) * FLASH_WRITABLE_BYTES) + 4), 0, (FLASH_FILE_HEADER - 4));  // clear the filename field
         strncpy((char *) (system_buffer + ((p % FLASH_ERASABLE_SECTOR) * FLASH_WRITABLE_BYTES) + 4), name, (FLASH_FILE_HEADER - 5)); // copy the new name
-        flash_eraseSector(sectp);
+        flash_erasePage(sectp);
         for(t = 0; t < FLASH_ERASABLE_SECTOR; t++) {    // restore the sector
             flash_writePage((sectp + t), (system_buffer + (t * FLASH_WRITABLE_BYTES)));
         }
@@ -172,8 +208,7 @@ void flash_deleteFile(long p) {
         long flen;  // file length in pages
         flash_getHeader(p, &flen, NULL);    // (flen) comes in bytes here
         if(flen == 0 || flen == -1) return; // invalid header
-        if(flen % FLASH_WRITABLE_BYTES) flen += FLASH_WRITABLE_BYTES;
-        flen /= FLASH_WRITABLE_BYTES;
+        flen = flash_b2p(flen);
         memset(system_buffer, 0, FLASH_ERASABLE_BYTES);
         long sectp = (p / FLASH_ERASABLE_SECTOR) * FLASH_ERASABLE_SECTOR;   // start from the beginning of the sector
         long page = sectp;
@@ -182,7 +217,7 @@ void flash_deleteFile(long p) {
             if(page < p || page >= (p + flen)) {    // skip the pages occupied by the file
                 flash_readPage(page, (system_buffer + (pcnt * FLASH_WRITABLE_BYTES)));
                 if(++pcnt >= FLASH_ERASABLE_SECTOR) {
-                    flash_eraseSector(sectp);
+                    flash_erasePage(sectp);
                     for(pcnt = 0; pcnt < FLASH_ERASABLE_SECTOR; pcnt++, sectp++) {
                         flash_writePage(sectp, (system_buffer + (pcnt * FLASH_WRITABLE_BYTES)));
                     }
@@ -193,7 +228,7 @@ void flash_deleteFile(long p) {
             page++;
         }
         if(pcnt) {  // flush the buffer
-            flash_eraseSector(sectp);
+            flash_erasePage(sectp);
             for(pcnt = 0; pcnt < FLASH_ERASABLE_SECTOR; pcnt++, sectp++) {
                 flash_writePage(sectp, (system_buffer + (pcnt * FLASH_WRITABLE_BYTES)));
             }
@@ -209,7 +244,7 @@ void flash_getHeader(long p, long *len, char **name) {
         if(name) {
             *name = (char *) system_buffer;
             memset(*name, 0, FLASH_FILE_HEADER);
-            unsigned char t;
+            uint8_t t;
             for(t = 0; t < FLASH_FILE_HEADER - 4; t++) *(*name + t) = flash_readByte(p, t + 4);
         }
     #endif
@@ -224,10 +259,8 @@ long flash_findFile(char *name) {
         while(p < FLASH_NUMBER_PAGES && r == -1) {
             flash_getHeader(p, &fl, &fn);
             if(fl == 0 || fl == -1) break;
-            if(fl % FLASH_WRITABLE_BYTES) fl += FLASH_WRITABLE_BYTES;
-            fl /= FLASH_WRITABLE_BYTES;
             if(!istrncmp(fn, name, (FLASH_FILE_HEADER - 4))) r = p; // found it (not case-sensitive)
-            p += fl;
+            p += flash_b2p(FLASH_FILE_HEADER + fl);
         }
     #endif
     return r;
@@ -236,5 +269,5 @@ long flash_findFile(char *name) {
 
 void flash_eraseAll(void) {
     long s;
-    for(s = 0; s < FLASH_SIZE_SECTORS; s++) flash_eraseSector(s);
+    for(s = 0; s < FLASH_SIZE_SECTORS; s++) flash_erasePage(s);
 }

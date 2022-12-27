@@ -13,6 +13,17 @@ typedef struct {
 } editor_vars_t;
 char *pTEXT;
 
+const char *helpk = "  Esc; #Bs; ^Y; ^Z\0"
+                    "#Up/#Dn (page Up/Dn)\0"
+                    "#Lf/#Rt (line B/End)\0"
+                    "#^Up/#^Dn (tx B/End)\0"
+;
+
+const char *helpc = "  NEW/LOAD/SAVE [fn]\0"
+                    "DELETE fn; ERASE ALL\0"
+                    "SEND; RECEIVE [fn]\0"
+                    "FILES; RUN [fn]\0"
+;
 
 // store single received xmodem block
 // this function is required by XmodemReceive()
@@ -93,10 +104,11 @@ void allocText(int8_t mode) {
     else {  // mode 2
         p = x_malloc((byte **) &TEXT, (size_x) (textLen(TEXT) + 1));    // adjust memory size to free up memory for execution
     }
-    line_buffer = (char *) system_buffer - (MAX_LINE_LEN + 1);  // reuse buffer instead of allocating separate block
+    line_buffer = (char *) &system_buffer[sizeof(system_buffer)] - (MAX_LINE_LEN + 1);  // reuse buffer instead of allocating separate block
     if(p == NULL || line_buffer == NULL) { // the memory allocation has failed - this is a major failure
         WDTCON0bits.SEN = 0;        // disable the WDT
         printf("\r\nFATAL: No memory");
+        x_list_alloc();
         uint8_t t = 100;
         while(t--) mSec(100);   // 10 seconds here and then turn off
         Reset();
@@ -127,14 +139,15 @@ static char *gotoLine(uint32_t lnum) {
 // print the current text window
 // (l) is the current cursor line within the window
 // (h) is the horizontal window offset
-static void textWindow(char *s, uint8_t l, uint16_t h) {
+// (bf) is a flag to tell the function to ignore the text buffer and only use the input string
+static void textWindow(char *s, uint8_t l, uint16_t h, char bf) {
     uint16_t lb = strlen(line_buffer);
     uint8_t t, r;
     for(r = 0; r < LCD_HEIGHT; r++) {
         uint16_t ls = ((s && *s != ETX) ? strlen(s) : 0);
         for(t = 0; t < LCD_WIDTH; t++) {
             lcdSetPos(t, r);
-            if(r != l) lcdDrawChar(((h + t) < ls) ? s[h + t] : ' ');
+            if(r != l || bf) lcdDrawChar(((h + t) < ls) ? s[h + t] : ' ');
             else lcdDrawChar(((h + t) < lb) ? line_buffer[h + t] : ' ');
         }
         if(s && *s != ETX) s += (strlen(s) + 1);
@@ -162,24 +175,28 @@ static int message(const char *msg, uint8_t keyf) {
 
 
 // run the source in the editor
-static void run(editor_vars_t *ev) {
+static void run(editor_vars_t *ev, __uint24 source_addr) {
     allocText(2);   // free up memory for execution
     //x_malloc((byte **) &bas, (size_x) sizeof(basic_t));   // allocate memory for the internal interpreter data
     if((void *) &bas) {
-        bas.src = TEXT;    // load the global source pointer
-        error_code_t e = runBasic(&bas.src, 1);     // enable pseudo-code tokenisation for faster execution
-        if(e > E_OK) {      // go to error location
-            ev->hwin = ev->hcur = ev->vwin = ev->vcur = 0;
-            char *c;
-            for(c = TEXT; *c != ETX && *(c + 1) != ETX && c < bas.src; c++) {
-                if(*c) {
-                    if(ev->hcur < (LCD_WIDTH - 1)) ev->hcur++; else ev->hwin++;
-                }
-                else {
-                    ev->hwin = ev->hcur = 0;
-                    if(ev->vcur < (LCD_HEIGHT - 1)) ev->vcur++; else ev->vwin++;
+        bas.src = (char *) source_addr; // load the global source pointer
+        error_code_t e = runBasic(&bas.src,
+                !!(source_addr >= (__uint24) (intptr_t) MEMORY && source_addr < (__uint24) (intptr_t) (MEMORY + xmem_bytes)));
+        if(e > E_OK) {  // go to the error location
+            if(source_addr >= (__uint24) (intptr_t) MEMORY && source_addr < (__uint24) (intptr_t) (MEMORY + xmem_bytes)) {
+                ev->hwin = ev->hcur = ev->vwin = ev->vcur = 0;
+                char *c;
+                for(c = TEXT; *c != ETX && *(c + 1) != ETX && c < bas.src; c++) {
+                    if(*c) {
+                        if(ev->hcur < (LCD_WIDTH - 1)) ev->hcur++; else ev->hwin++;
+                    }
+                    else {
+                        ev->hwin = ev->hcur = 0;
+                        if(ev->vcur < (LCD_HEIGHT - 1)) ev->vcur++; else ev->vwin++;
+                    }
                 }
             }
+            else { message("[!] No file err pos", 0); mSec(1000); }
         }
         //x_free((byte **) &bas); bas = NULL;
     }
@@ -317,11 +334,10 @@ static void editor_commands(editor_vars_t *ev) {
             if(*FILENAME) {
                 lcdSetPos(0, (LCD_HEIGHT - 1));
                 printf("Saving file...");
-                long p = flash_writeFile(FILENAME, textLen(TEXT), TEXT);
+                long p = flash_writeFile(FILENAME, textLen(TEXT), TEXT, 'W');
                 if(p >= 0) {
                     flash_getHeader(p, &p, &cmd);   // length will come in bytes here
-                    if(p % FLASH_WRITABLE_BYTES) p += FLASH_WRITABLE_BYTES;
-                    p /= FLASH_WRITABLE_BYTES;
+                    p = flash_b2p(FLASH_FILE_HEADER + p);
                     lcdSetPos(0, (LCD_HEIGHT - 1));
                     printf("Saved %li sector%s", (long) p, ((p != 1) ? "s" : ""));
                     mSec(1000);
@@ -332,16 +348,39 @@ static void editor_commands(editor_vars_t *ev) {
             break;
         }
 
-        // load file or load and run file or run the content in memory
-        if((!istrncmp(line_buffer, "load", 4) && (*(line_buffer + 4) == 0 || *(line_buffer + 4) == ' ')) ||
-                (!istrncmp(line_buffer, "run", 3) && (*(line_buffer + 3) == 0 || *(line_buffer + 3) == ' '))) {
-            uint8_t runf = 0;   // run flag
-            if(!istrncmp(line_buffer, "load", 4)) cmd += 4;
-            else if(!istrncmp(line_buffer, "run", 3)) {
+        #if RUN_IN_PLACE > 0
+            // run the file in the editor or from flash (without loading)
+            if(!istrncmp(line_buffer, "run", 3) && (*(line_buffer + 3) == 0 || *(line_buffer + 3) == ' ')) {
                 cmd += 3; skipSpacesCmd();
-                if(*cmd == 0) { run(ev); break; }   // disregard any loading and run the content in memory
-                else runf = 1;  // run file after loading
+                if(*cmd == 0) { run(ev, (__uint24) (intptr_t) TEXT); break; }   // run the file in the editor
+                skipSpacesCmd();
+                long p = flash_findFile(cmd);
+                if(p >= 0) {
+                    p = FLASH_START_ADDRESS + (p * FLASH_WRITABLE_BYTES);
+                    run(ev, (__uint24) p);
+                }
+                else message("ERR: loading failed", 1);
+                break;
             }
+        #endif
+
+        // load file or load and run file or run the content in memory
+        if((!istrncmp(line_buffer, "load", 4) && (*(line_buffer + 4) == 0 || *(line_buffer + 4) == ' '))
+                #if RUN_IN_PLACE == 0
+                    || (!istrncmp(line_buffer, "run", 3) && (*(line_buffer + 3) == 0 || *(line_buffer + 3) == ' '))
+                #endif
+                ) {
+            #if RUN_IN_PLACE == 0
+                uint8_t runf = 0;   // run flag
+                if(!istrncmp(line_buffer, "load", 4)) cmd += 4;
+                else if(!istrncmp(line_buffer, "run", 3)) {
+                    cmd += 3; skipSpacesCmd();
+                    if(*cmd == 0) { run(ev, (__uint24) (intptr_t) TEXT); break; }   // disregard any loading and run the content in memory
+                    else runf = 1;  // run file after loading
+                }
+            #else
+                cmd += 4;
+            #endif
             skipSpacesCmd();
             if(*cmd) {  // a new filename is supplied
                 memset(FILENAME, 0, (FILENAME_LEN + 1));
@@ -358,7 +397,9 @@ static void editor_commands(editor_vars_t *ev) {
                 flash_readFile(p, &offs, MAX_TEXT_LEN, TEXT);
                 memset(line_buffer, 0, (MAX_LINE_LEN + 1));
                 LINE = gotoLine(0);
-                if(runf) run(ev);
+                #if RUN_IN_PLACE == 0
+                    if(runf) run(ev, (__uint24) (intptr_t) TEXT);
+                #endif
             }
             else message("ERR: loading failed", 1);
             break;
@@ -384,7 +425,9 @@ static void editor_commands(editor_vars_t *ev) {
         // list stored filenames
         if(!istrncmp(line_buffer, "files", 5) && (*(line_buffer + 5) == 0 || *(line_buffer + 5) == ' ')) {
             cmd += 5; skipSpacesCmd();
+
             // TODO: insert name mask support here?
+
             lcdCls();
             char *fn;
             int32_t flen;
@@ -393,8 +436,7 @@ static void editor_commands(editor_vars_t *ev) {
             while(p < FLASH_NUMBER_PAGES) {
                 flash_getHeader((long) p, &flen, &fn);   // length will come in bytes here
                 if(flen == 0 || flen == -1) break;
-                if(flen % FLASH_WRITABLE_BYTES) flen += FLASH_WRITABLE_BYTES;
-                flen /= FLASH_WRITABLE_BYTES;
+                flen = flash_b2p(FLASH_FILE_HEADER + flen);
                 if(--lc <= 0) {
                     lc = LCD_HEIGHT - 1;
                     if(message("Press key...", 1) == CODE_ESC) break;
@@ -419,6 +461,14 @@ static void editor_commands(editor_vars_t *ev) {
             flash_eraseAll();
             message("Storage erased", 0);
             mSec(1000);
+            break;
+        }
+
+        // mini help (commands)
+        if(!istrncmp(line_buffer, "help", 4) && *(line_buffer + 4) == 0) {
+            cmd += 4; skipSpacesCmd();
+            textWindow((char *) helpc, 0, 0, 1);
+            getchar();
             break;
         }
 
@@ -484,7 +534,7 @@ void editor(char *text) {
             sw = gotoLine(ev.vwin);
         }
 
-        textWindow((sw ? sw : text), ev.vcur, ev.hwin);
+        textWindow((sw ? sw : text), ev.vcur, ev.hwin, 0);
         if(LINE == NULL) LINE = text;
         if(ev.chgv == CHG_CMDMODE) {
             editor_commands(&ev);   // command mode
@@ -535,10 +585,25 @@ void editor(char *text) {
             continue;
         }
 
-        // Ctrl-E to erase a full line
-        if((kbd_flags & KBD_FLAG_CTRL) && toupper(ch) == 'E') {
+        // Ctrl-Y to erase a full line
+        if((kbd_flags & KBD_FLAG_CTRL) && toupper(ch) == 'Y') {
+            strcpy((char *) system_buffer, line_buffer);
             *line_buffer = 0;
             ev.hwin = ev.hcur = 0;
+            continue;
+        }
+
+        // Ctrl-Z to restore erased line
+        if((kbd_flags & KBD_FLAG_CTRL) && toupper(ch) == 'Z') {
+            strcpy(line_buffer, (char *) system_buffer);
+            ev.hwin = ev.hcur = 0;
+            continue;
+        }
+
+        // Ctrl-1 for mini help (keys)
+        if((kbd_flags & KBD_FLAG_CTRL) && toupper(ch) == '1') {
+            textWindow((char *) helpk, 0, 0, 1);
+            getchar();
             continue;
         }
 

@@ -12,7 +12,8 @@
 
 #include "platform/eadog204.h"  // LCD EA DOGM204
 #include "platform/keybd.h"     // matrix keyboard
-#include "platform/flash.h"     // flash storage
+#include "platform/flash.h"     // flash functions
+#include "platform/flashdrv.h"  // flash storage
 #include "platform/hardware.h"  // generic hardware functions
 #include "xmem.h"               // dynamic memory manager
 

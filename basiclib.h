@@ -56,6 +56,8 @@ void cm_tdref(void);
 void cm_wait(void);
 void cm_clear(void);
 void cm_dout(void);
+void cm_delete(void);
+void cm_rename(void);
 
 // functions
 void fn_rnd(void);
@@ -95,5 +97,6 @@ void fn_instr(void);
 void fn_chr(void);
 void fn_ain(void);
 void fn_din(void);
+void fn_exist(void);
 
 #endif
