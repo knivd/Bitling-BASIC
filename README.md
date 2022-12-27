@@ -45,7 +45,7 @@ var string s[5]     ' array of five zero-terminated strings
 
 IF  <expression>  THEN
 { ELSE }
-END IF  or  ENDIF
+END IF  or  ENDIF  or  !
 
 FOR  <variable>  =  <expression>  TO  <expression>  { STEP <expression> }
 NEXT  { <variable> }
@@ -72,6 +72,7 @@ SUB     <name> {  (  <type>  {  @  }  <variable>  { ,  <type>  ...  }  )  }
 FUNC    <name> {  (  <type>  {  @  }  <variable>  { ,  <type>  ...  }  )  }  {  AS  <type>  }
 RETURN  {  value  }
 END SUB  or  ENDSUB
+END FUNC  or  ENDFUNC
 GOSUB   <sub_name(...)>      ' optional calling format for subs
 
 
@@ -89,6 +90,8 @@ GET     [ # fileN ]  variable  { ,  variable ... }
 INKEY   [ # fileN ]  variable
 OPEN    <str>   AS   # fileN
 CLOSE   # fileN
+DELETE  <filename>
+RENAME  <old_fname>, <new_fname>
 DATA    expression  { ,  expression ... }
 READ    variable  { ,  variable ... }
 REWIND                      ' return to the first DATA element
@@ -134,7 +137,7 @@ HTAN    (val)
 COTAN   (val)
 FREE    ()                  ' return the largest free block in memory
 TDRAM   ()                  ' return the text display RAM address
-TDTDT   ()                  ' text display width
+TDWDT   ()                  ' text display width
 TDHGT   ()                  ' text display height
 PEEK    (addr)              ' 0 and positive numbers: RAM address, negative numbers: ROM address-1
 ASC     (str)               ' character (first in string) to ASCII
@@ -149,5 +152,6 @@ INSTR   (substr, str, start)
 TIMER   (value)             ' read system millisecond incremental counter; any value different than 0 first loads the counter
 AIN     (channel)           ' supported channels are 0..7
 DIN     (channel)           ' supported channels are 0..7
+EXIST   <filename>          ' will return 1 if true or 0 if not
 
 ```
