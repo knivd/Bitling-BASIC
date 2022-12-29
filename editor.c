@@ -94,24 +94,26 @@ static size_t textLen(char *s) {
 // mode 2 = re-allocate only used to free up memory for program execution
 void allocText(int8_t mode) {
     char *p = NULL;
-    x_defrag(); // force full memory optimisation
-    if(mode < 2) {
-        if(mode == 0) {
-            x_free((byte **) &TEXT); TEXT = NULL;
+    uint8_t attempts = 2;
+    do {
+        if(--attempts == 1) x_defrag(); // force full memory optimisation
+        else x_defrag_ultra();          // last chance with a risky ultra defrag
+        if(mode < 2) {
+            if(mode == 0) {
+                x_free((byte **) &TEXT); TEXT = NULL;
+            }
+            p = x_malloc((byte **) &TEXT, (size_x) (MAX_TEXT_LEN + 1));     // allocate memory for the text
         }
-        p = x_malloc((byte **) &TEXT, (size_x) (MAX_TEXT_LEN + 1));     // allocate memory for the text
-    }
-    else {  // mode 2
-        p = x_malloc((byte **) &TEXT, (size_x) (textLen(TEXT) + 1));    // adjust memory size to free up memory for execution
-    }
-    line_buffer = (char *) &system_buffer[sizeof(system_buffer)] - (MAX_LINE_LEN + 1);  // reuse buffer instead of allocating separate block
+        else {  // mode 2
+            p = x_malloc((byte **) &TEXT, (size_x) (textLen(TEXT) + 1));    // adjust memory size to free up memory for execution
+        }
+        line_buffer = (char *) &system_buffer[sizeof(system_buffer)] - (MAX_LINE_LEN + 1);  // reuse buffer instead of allocating separate block
+    } while((p == NULL || line_buffer == NULL) && attempts > 0);
     if(p == NULL || line_buffer == NULL) { // the memory allocation has failed - this is a major failure
-        WDTCON0bits.SEN = 0;        // disable the WDT
+        WDTCON0bits.SEN = 0;    // disable the WDT
         printf("\r\nFATAL: No memory");
         x_list_alloc();
-        uint8_t t = 100;
-        while(t--) mSec(100);   // 10 seconds here and then turn off
-        Reset();
+        SLEEP();    // only reset to exit from from here
     }
     if(mode == 0) {
         memset(TEXT, ETX, (MAX_TEXT_LEN + 1));
@@ -179,9 +181,12 @@ static void run(editor_vars_t *ev, __uint24 source_addr) {
     allocText(2);   // free up memory for execution
     //x_malloc((byte **) &bas, (size_x) sizeof(basic_t));   // allocate memory for the internal interpreter data
     if((void *) &bas) {
+        lcdSelectROM(ROM_B);
         bas.src = (char *) source_addr; // load the global source pointer
         error_code_t e = runBasic(&bas.src,
                 !!(source_addr >= (__uint24) (intptr_t) MEMORY && source_addr < (__uint24) (intptr_t) (MEMORY + xmem_bytes)));
+        lcdSelectROM(ROM_B);
+        lcdCursorOn();
         if(e > E_OK) {  // go to the error location
             if(source_addr >= (__uint24) (intptr_t) MEMORY && source_addr < (__uint24) (intptr_t) (MEMORY + xmem_bytes)) {
                 ev->hwin = ev->hcur = ev->vwin = ev->vcur = 0;

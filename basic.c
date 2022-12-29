@@ -284,7 +284,7 @@ void releaseVars(char *parent) {
 void error(error_code_t err) {
     if(bas.error_code != E_OK) return;
     bas.error_code = err;
-    for( ; bas.acX >= 0; bas.acX--) {
+    for( ; bas.acX; bas.acX--) {
         if(bas.acc[bas.acX].type == TYPE_STR) x_free((byte **) &bas.acc[bas.acX].s);
     }
     if(bas.A.type == TYPE_STR) x_free((byte **) &bas.A.s);
@@ -1602,7 +1602,12 @@ error_code_t runBasic(char **source, char use_codes) {
         bas.tk_src = bas.src = bas.entry;
         bas.t_token = T_UNKNOWN;
         while(bas.t_token != T_ETX && bas.error_code == E_OK) {
-            if(compile_comments()) continue;
+            while(*bas.src <= ' ' && *bas.src > 0x03 && *bas.src != '\n' && *bas.src != ETX) bas.src++;
+            if(*bas.src == 0x03) {  // decompile comments
+                uint8_t t = *(bas.src + 1);
+                *bas.src = '\''; *(bas.src + 1) = ' ';
+                bas.src += t;
+            }
             getToken();
             if(bas.t_token == T_ETX || bas.t_token == T_EOL || bas.t_token == T_NUMBER || bas.t_token == T_STRING) continue;
             if(bas.t_token == T_IDENTIFIER || bas.t_token == T_SUBID || bas.t_token == T_LABELID) continue;
@@ -1638,8 +1643,7 @@ error_code_t runBasic(char **source, char use_codes) {
     }
 
     *source = bas.src;      // update the source position on exit
-    //if(ecode == E_MEMORY) x_list_alloc();   // debug allocated memory on exit
+    if(ecode == E_MEMORY) x_list_alloc();   // debug allocated memory on exit
     x_defrag();
-    lcdCursorOn();
     return ecode;   // here the execution terminates with an error (or OK)
 }

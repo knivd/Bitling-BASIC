@@ -20,7 +20,7 @@ A leading page may be followed by other pages as indicated in the first two byte
 // the following parameters and functions are hardware-dependent
 // ==================================================================================================
 
-#define FLASH_SIZE_SECTORS      78          // total size of the available flash in number of erasable sectors
+#define FLASH_SIZE_SECTORS      75          // total size of the available flash in number of erasable sectors
 
 #define FLASH_WRITABLE_BYTES    256         // N of bytes in a writable page
 #define FLASH_ERASABLE_BYTES    256         // N of bytes in an erasable sector

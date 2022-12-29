@@ -656,7 +656,7 @@ void fn_chr(void) {
     if(x_malloc((byte **) &bas.S.s, (size_x) 2) == NULL) error(E_MEMORY);
     *bas.str_buf = (char) bas.A.i;
     *(bas.str_buf + 1) = 0;
-    bas.S.s = bas.str_buf;
+    strcpy(bas.S.s, bas.str_buf);
     pushAcc(&bas.S);
 }
 

@@ -94,7 +94,7 @@ DATA    expression  { ,  expression ... }
 READ    variable  { ,  variable ... }
 REWIND                      ' return to the first DATA element
 POP                         ' remove one return address from the stack
-POKE    <addr, val
+POKE    <addr, val>
 RESET                       ' restart the system
 SLEEP                       ' put the system to sleep
 CLS

@@ -41,7 +41,7 @@ void lcdInit(void) {
 
     lcdCls();
     lcdCtrl(DISPLAY /* | CURSOR | BLINK */);
-    lcdSelectROM(2);
+    lcdSelectROM(ROM_B);
 }
 
 

@@ -101,7 +101,7 @@ size_x x_total(void) {
 void x_list_alloc(void) {
     xhdr_t *p, *t, *h = pTOP;
     #if !SMALL_SCREEN
-        int32_t c = 0;
+        long c = 0;
         size_x used = 0;
         while(--h >= hcur) {
             if(h->cvar) used += h->len;
@@ -116,7 +116,9 @@ void x_list_alloc(void) {
         if(h->data == pMEMORY) break;
     }
     if(h < hcur) return;
-    do {
+    unsigned short num = 0, err = 0;
+    for( ; h; ) {
+        num++;
         #if !SMALL_SCREEN
             #if XBLK_NAME_LEN > 0
                 printf("%3li: H:%8p,  V:%8p,  M:%8p..%8p,  L:%6li,  N:%s\r\n",
@@ -152,6 +154,7 @@ void x_list_alloc(void) {
 			if(t->data > h->data && (p == NULL || t->data < p->data)) p = t;
 		}
 		if(p && (h->data + h->len) != p->data) {  /* memory leak! */
+            err++;
             #if !SMALL_SCREEN
                 #if XBLK_NAME_LEN > 0
                     printf("%3li: ..........,  V:%8p,  M:%8p..%8p,  L:%6li,  N:%s\r\n",
@@ -185,7 +188,13 @@ void x_list_alloc(void) {
         #if SMALL_SCREEN
             getchar();
         #endif
-    } while(h);
+    };
+    #if SMALL_SCREEN
+        printf("-- %u blk, %u lks\r\n", num, err);
+        getchar();
+    #else
+        printf("%-- u blocks, %u leaks\r\n", num, err);
+    #endif
 }
 
 
@@ -223,15 +232,14 @@ void x_defrag_ultra(void) {
 /* optimise the memory */
 void x_defrag(void) {
     defrag_run++;
-    uint8_t rf = 0;
+    unsigned char rf = 0;
     xhdr_t *t, *h = pTOP;
     while(--h >= hcur) {
-        /*if(h->cvar && *(h->cvar) != h->data) h->cvar = NULL;*/    /* remove orphaned blocks */
         rf = 0;
         t = pTOP;
         while(--t >= hcur) {
             if((h->data + h->len) == t->data && t-> len && t->cvar == NULL) {   /* the next block is free */
-                if(h->cvar == NULL) {
+                if(h->cvar == NULL || h->len >= (t->len * 3)) {
                     h->len += t->len;   /* combine the two blocks */
                     t->len = 0;         /* mark the header for removal */
                     t = pTOP;           /* restart the inner loop */
@@ -244,12 +252,12 @@ void x_defrag(void) {
     }
     dcur = pMEMORY;
     h = pTOP;
-    while(--h >= hcur) {    /* find the new data top */
+    while(--h >= hcur) {    /* find the top of actual data blocks */
         if(h->cvar && (h->data + h->len) > dcur) dcur = h->data + h->len;
     }
     t = h = pTOP;
     while(--h >= hcur) {    /* remove the marked headers (those with length 0) */
-        if(h->len) memmove(--t, h, sizeof(xhdr_t));
+        if(h->len && h->data < dcur) memmove(--t, h, sizeof(xhdr_t));
     }
     hcur = t;
 }
@@ -269,24 +277,24 @@ int x_free(byte **var) {
 
 void *x_malloc(byte **var, size_x sz) {
     if(var == NULL || sz == 0) { x_free(var); return NULL; }    /* size 0 is request to release the block */
-    #if SIZE_MAX > INT32_MAX
-    if(sz > INT32_MAX) return NULL; /* unsupported block size */
+    #if SIZE_MAX > LONG_MAX
+        if(sz > LONG_MAX) return NULL;  /* unsupported block size */
     #endif
-    if(*var && (*var < pMEMORY || *var > (byte *) pTOP)) return NULL;
+    if(*var && (*var < pMEMORY || *var > (byte *) pTOP)) return NULL;   /* (*var) is pointing outside the managed area */
     #if XMEM_ALIGN > 0
-    sz = ((sz >> XMEM_ALIGN) + !!((unsigned long) sz % (1ul << XMEM_ALIGN))) << XMEM_ALIGN; /* round up to alignment boundary */
+        sz = ((sz >> XMEM_ALIGN) + !!((unsigned long) sz % (1ul << XMEM_ALIGN))) << XMEM_ALIGN; /* round up to alignment boundary */
     #endif
-    int8_t attempts = 2;
+    signed char attempts = 2;
     retry:;
     if(attempts < 0) return NULL;   /* the story ends here */
     xhdr_t *z = findxhdr(*var);     /* possible outcomes:
-                                    (!*var && !z) - a new block to be allocated
-                                    (!*var && z)  - impossible
-                                    (*var && !z)  - error (the variable is unaware that its block has been freed)
-                                    (*var && z)   - resize an existing data block */
-    if(*var && z == NULL) return NULL;  /* a data block is supplied but not recognised */
+                                    [1] (!*var && !z) - a new block to be allocated
+                                    [2] (!*var && z)  - impossible
+                                    [3] (*var && !z)  - error (the variable is unaware that its block has been freed)
+                                    [4] (*var && z)   - resize an existing data block */
+    if(*var && z == NULL) return NULL;  /* case [3]; a data block is supplied but not recognised */
     xhdr_t *h, *t;
-    if(z) {
+    if(z) { /* case [4]; the block can only be found if (*var) not NULL */
         if(sz == z->len) return z->data;    /* nothing is needed to do */
         if((z->data + z->len) == dcur) {    /* luckily it happens that (z) is the last allocated block */
             if((byte *) (z->data + sz) > (byte *) hcur) {
@@ -308,21 +316,22 @@ void *x_malloc(byte **var, size_x sz) {
         }
     }
     if(h) {     /* a suitable free block with length >= sz is found */
-        if(h->len <= (sz + (sz / 5))) dptr = h->data;   /* up to 110% of the required size is acceptable */
-        else {  /* too large; try to split the block */
+        if((sz + sizeof(long)) < h->len) {  /* try to carve off part from a large free block */
             if(attempts) {
                 if((byte *) (hcur - 1) < dcur) {    /* no room for a new header */
                     x_defrag(); attempts--; goto retry;
                 }
             }
-            dptr = h->data;
-            if(dcur <= (byte *) (hcur - 1)) {   /* create a new header for the carved off part */
-                h->data += sz;
-                h->len -= sz;
-                h = --hcur;
+            if(dcur <= (byte *) (hcur - 1)) {       /* create new header for the remainder */
+                hcur--;
+                hcur->cvar = NULL;
+                hcur->data = h->data + sz;
+                hcur->len = h->len - sz;
+                h->len = sz;
             }
-            else sz = h->len;   /* last chance - use the block as it is and without resizing */
         }
+        sz = h->len;
+        dptr = h->data;
     }
     else {  /* a new block will have to be allocated */
         if((byte *) (hcur - 1) < (dcur + sz)) { /* not enough memory */
@@ -338,7 +347,7 @@ void *x_malloc(byte **var, size_x sz) {
     #if XBLK_NAME_LEN > 0
         h->name[0] = 0;
     #endif
-    if(z) {     /* transfer the old block to the new place */
+    if(z) {     /* case [4] continuation; transfer the old block to the new place */
         if(h->len > z->len) {
             memset((h->data + z->len), 0, (size_t) (h->len - z->len));  /* clear the rest of the block */
             memcpy(h->data, z->data, (size_t) z->len);
