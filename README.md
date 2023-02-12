@@ -1,6 +1,6 @@
 # ELLO-LC1
 ELLO LC1 firmware with Bitling BASIC
-Platform: PIC18F47Q83
+Platform: PIC18F47Q83 (easily portable to any other)
 ```
 
 Bitling BASIC interpreter
